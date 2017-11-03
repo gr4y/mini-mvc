@@ -1,6 +1,6 @@
 <?php
 
-namespace xMVC;
+namespace miniMVC;
 
 use FastRoute\RouteCollector as RouteCollector;
 use Symfony\Component\HttpFoundation\Request;
