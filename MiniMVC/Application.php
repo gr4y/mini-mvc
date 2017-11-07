@@ -98,7 +98,7 @@ class Application {
     $request = Request::createFromGlobals();
 
     // init dispatcher
-    $dispatcher = FastRoute\simpleDispatcher($this->routes);
+    $dispatcher = \FastRoute\simpleDispatcher($this->routes);
 
     // A dispatcher does what a dispatcher does... Like the spiderpig.
     $route = $dispatcher->dispatch($request->getMethod(), $request->getPathInfo());
@@ -108,19 +108,19 @@ class Application {
 
     // Handling of route
     switch($route[0]){
-      case FastRoute\Dispatcher::NOT_FOUND:
+      case \FastRoute\Dispatcher::NOT_FOUND:
         $response->setStatusCode(Response::HTTP_NOT_FOUND);
         $response->setContent(
           view('msg/not_found')
         );
         break;
-      case FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
+      case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
         $response->setStatusCode(Response::HTTP_METHOD_NOT_ALLOWED);
         $response->setContent(
           view('msg/method_not_allowed', ['allowed_methods' => $route[1]])
         );
         break;
-      case FastRoute\Dispatcher::FOUND:
+      case \FastRoute\Dispatcher::FOUND:
         // Replace Query Params in Request with Route Path Params
         $pathParams = $route[2];
         if(!empty($pathParams)) $request->query->replace($pathParams);
