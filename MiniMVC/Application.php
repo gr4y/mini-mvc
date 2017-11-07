@@ -55,9 +55,11 @@ class Application {
    */
   public function __construct($currentDir, $templateDir = null) {
     $this->workingDir = $currentDir;
-    // if the templateDir is not set we will assume it's in `../app/views`
+    // if the templateDir is not set we will assume it's in `../views`
     if($templateDir == null) {
-      $this->templateDir = $currentDir . '/../app/views';
+      $this->templateDir = $currentDir . '/../views';
+    } else {
+      $this->templateDir = $templateDir;
     }
 
     // Pretty Exception Handling by Whoops
