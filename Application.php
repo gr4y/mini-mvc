@@ -2,11 +2,11 @@
 
 namespace MiniMVC;
 
-use \FastRoute\RouteCollector as RouteCollector;
-use \Symfony\Component\HttpFoundation\Request;
-use \Symfony\Component\HttpFoundation\Response;
-use \Symfony\Component\HttpFoundation\Session\Session as Session;
-use \League\Plates\Engine as Engine;
+use FastRoute\RouteCollector as RouteCollector;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session as Session;
+use League\Plates\Engine as Engine;
 
 /*
  * The Application Class is my way of maintaining my own sanity
@@ -98,7 +98,7 @@ class Application {
     $request = Request::createFromGlobals();
 
     // init dispatcher
-    $dispatcher = FastRoute\simpleDispatcher($this->routes);
+    $dispatcher = \FastRoute\simpleDispatcher($this->routes);
 
     // A dispatcher does what a dispatcher does... Like the spiderpig.
     $route = $dispatcher->dispatch($request->getMethod(), $request->getPathInfo());
