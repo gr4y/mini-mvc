@@ -133,6 +133,7 @@ class Application {
         // if the class doesn't have the registerRoutes method, it will be skipped
         if(!method_exists($controller, "registerRoutes")) contiue;
         $controller::registerRoutes($r);
+      }
     });
 
     // A dispatcher does what a dispatcher does... Like the spiderpig.
