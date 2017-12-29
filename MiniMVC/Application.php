@@ -51,16 +51,20 @@ class Application {
   /**
    * Initializer
    *
-   * @param string currentDirectory
+   * @param string currentDir
+   * @param string templateDir
    */
-  public function __construct($currentDir, $templateDir = null) {
+  public function __construct($currentDir, $templateDir) {
     $this->workingDir = $currentDir;
-    // if the templateDir is not set we will assume it's in `../views`
+
+    // if the templateDir is not set, we get the fuck out
+    // any fallback path doesn't make any sense
     if($templateDir == null) {
-      $this->templateDir = $currentDir . '/../views';
-    } else {
-      $this->templateDir = $templateDir;
+      throw new Exception('Template Path not set');
     }
+
+    // In any other cases, we will set the templateDir
+    $this->templateDir = $templateDir;
 
     // Pretty Exception Handling by Whoops
     $whoops = new \Whoops\Run;
@@ -74,14 +78,6 @@ class Application {
     $this->templateEngine = new Engine($this->templateDir);
   }
 
-  /**
-   * @deprecated
-   * TODO I think a routes.php would be a better solution than this method.
-   */
-  public function declareRoutes(callable $callback) {
-    $this->routes = $callback;
-  }
-
   public function getTemplateEngine() {
     return $this->templateEngine;
   }
@@ -91,16 +87,53 @@ class Application {
   }
 
   /**
+   * Searches for Controllers via the Composer ClassLoader
+   *
+   * @param \Composer\Autoload\ClassLoader $loader
+   */
+  private function getControllers (\Composer\Autoload\ClassLoader $loader) {
+    $controllers = array();
+    $prefixes = $loader->getPrefixesPsr4();
+    foreach($prefixes as $namespace => $path) {
+      $path = $path[0];
+      if(strpos($path, "Controllers")) {
+        $files = scandir($path);
+        foreach($files as $file) {
+          if($file == ".." || $file == ".") continue;
+          $controller = substr($file, 0, strlen($file) - 4);
+          array_push($controllers, join([$namespace, $controller]));
+        }
+      }
+    }
+
+    // If there is Namespace with Controllers in it, the Application will just not work.
+    if(empty($controllers)) 
+      throw new \Exception("Add an Namespace called YourApplication\\Controllers and add it to PSR-4 in Composer");
+
+    return $controllers;
+  }
+
+  /**
    * Run the actual Application
    */
-  public function run(){
-    $this->session->start();
+  public function run ($loader = null){
+
+    if(!$loader) 
+      throw new \Exception("ClassLoader not specified. Please pass \Composer\Autoload\ClassLoader into \MiniMVC\Application::run");
 
     // Init Request
     $request = Request::createFromGlobals();
 
-    // init dispatcher
-    $dispatcher = \FastRoute\simpleDispatcher($this->routes);
+    // Fetch all Controllers
+    $controllers = $this->getControllers($loader);
+
+    // Initialize the Dispatcher using an Anonymous Function that calls the static method registerRoutes on each Controller
+    $dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($controllers){
+      foreach($controllers as $controller) {
+        // if the class doesn't have the registerRoutes method, it will be skipped
+        if(!method_exists($controller, "registerRoutes")) contiue;
+        $controller::registerRoutes($r);
+    });
 
     // A dispatcher does what a dispatcher does... Like the spiderpig.
     $route = $dispatcher->dispatch($request->getMethod(), $request->getPathInfo());
