@@ -87,7 +87,10 @@ class Application {
   }
 
   /**
-   * Searches for Controllers via the Composer ClassLoader
+   * Pull all Namespaces from @see{\Composer\Autoload\ClassLoader}#setPrefixesPsr4() and look for "Controlers"-Namespace
+   * then scans the directory and strips the extension from all filenames and pushes them into an array.
+   * 
+   * This is neccessary to be able to define all routes for each Controller in the Controller Class itself
    *
    * @param \Composer\Autoload\ClassLoader $loader
    */
@@ -96,9 +99,10 @@ class Application {
     $prefixes = $loader->getPrefixesPsr4();
     foreach($prefixes as $namespace => $path) {
       $path = $path[0];
-      if(strpos($path, "Controllers")) {
+      if(strpos($path, 'Controllers')) {
         $files = scandir($path);
         foreach($files as $file) {
+          // Ignore all files named '.', '..' and files not called Controller
           if($file == ".." || $file == "." || strpos($file, 'Controller') == 0) continue;
           $controller = substr($file, 0, strlen($file) - 4);
           array_push($controllers, join([$namespace, $controller]));
