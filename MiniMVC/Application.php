@@ -99,7 +99,7 @@ class Application {
       if(strpos($path, "Controllers")) {
         $files = scandir($path);
         foreach($files as $file) {
-          if($file == ".." || $file == ".") continue;
+          if($file == ".." || $file == "." || strpos($file, 'Controller') == 0) continue;
           $controller = substr($file, 0, strlen($file) - 4);
           array_push($controllers, join([$namespace, $controller]));
         }
