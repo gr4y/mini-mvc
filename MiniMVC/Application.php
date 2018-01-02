@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 namespace MiniMVC;
 
@@ -120,6 +120,9 @@ class Application {
 
     if(!$loader) 
       throw new \Exception("ClassLoader not specified. Please pass \Composer\Autoload\ClassLoader into \MiniMVC\Application::run");
+
+    // Start Session
+    $this->session->start();
 
     // Init Request
     $request = Request::createFromGlobals();
