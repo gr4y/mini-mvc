@@ -54,17 +54,17 @@ class Application {
    * @param string currentDir
    * @param string templateDir
    */
-  public function __construct($currentDir, $templateDir) {
+  public function __construct($currentDir, $conf) {
     $this->workingDir = $currentDir;
 
     // if the templateDir is not set, we get the fuck out
     // any fallback path doesn't make any sense
-    if($templateDir == null) {
+    if($conf['views'] == null) {
       throw new Exception('Template Path not set');
     }
 
     // In any other cases, we will set the templateDir
-    $this->templateDir = $templateDir;
+    $this->templateDir = $conf['views'];
 
     // Pretty Exception Handling by Whoops
     $whoops = new \Whoops\Run;
@@ -136,9 +136,11 @@ class Application {
 
     // Initialize the Dispatcher using an Anonymous Function that calls the static method registerRoutes on each Controller
     $dispatcher = \FastRoute\simpleDispatcher(function(RouteCollector $r) use ($controllers){
+      // iterate over controllers array
       foreach($controllers as $controller) {
         // if the class doesn't have the registerRoutes method, it will be skipped
-        if(!method_exists($controller, "registerRoutes")) contiue;
+        if(!method_exists($controller, "registerRoutes")) continue;
+        // call registerRoutes method
         $controller::registerRoutes($r);
       }
     });
