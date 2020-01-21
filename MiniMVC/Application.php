@@ -87,7 +87,7 @@ class Application {
   }
 
   /**
-   * Pull all Namespaces from @see{\Composer\Autoload\ClassLoader}#setPrefixesPsr4() and look for "Controlers"-Namespace
+   * Pull all Namespaces from @see{\Composer\Autoload\ClassLoader}#setPrefixesPsr4() and look for "Controllers"-Namespace
    * then scans the directory and strips the extension from all filenames and pushes them into an array.
    * 
    * This is neccessary to be able to define all routes for each Controller in the Controller Class itself
